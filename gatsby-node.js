@@ -6,6 +6,7 @@ exports.createPages = ({boundActionCreators, graphql}) => {
   const { createPage } = boundActionCreators
 
   const movieTemplate = path.resolve(`src/templates/movie.js`)
+  const yearTemplate = path.resolve(`src/templates/year.js`)
 
   const movies = graphql(`{
     allMoviesJson {
@@ -15,6 +16,9 @@ exports.createPages = ({boundActionCreators, graphql}) => {
           Title
           Year
         }
+      }
+      years: group (field: Year) {
+        fieldValue
       }
     }
   }`)
@@ -29,6 +33,16 @@ exports.createPages = ({boundActionCreators, graphql}) => {
         component: movieTemplate,
         context: {
           id: movie.id
+        }
+      })
+    })
+
+    movies.data.allMoviesJson.years.forEach(({fieldValue: year}) => {
+      createPage({
+        path: `/movies/${year}`,
+        component: yearTemplate,
+        context: {
+          year: year
         }
       })
     })
